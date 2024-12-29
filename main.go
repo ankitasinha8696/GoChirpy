@@ -9,6 +9,10 @@ func main() {
 
     newMux := http.NewServeMux()
 
+    fileServer := http.FileServer(http.Dir("."))
+
+    newMux.Handle("/", fileServer)
+
     server := &http.Server{
         Addr:    ":8080",  // Set the address to listen on port 8080
         Handler: newMux,      // Use the ServeMux as the server's handler
