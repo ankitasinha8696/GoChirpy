@@ -1,4 +1,4 @@
-module github.com/home/ankitasinha/GoChirpy
+module github.com/ankitasinha/GoChirpy
 
 go 1.22.2
 

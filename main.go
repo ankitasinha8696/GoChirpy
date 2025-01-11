@@ -12,7 +12,7 @@ import (
     "github.com/joho/godotenv"
 
     _ "github.com/lib/pq"
-    "github.com/ankitasinha/chirpy/internal/database"
+    "github.com/ankitasinha/GoChirpy/internal/database"
 )
 
 func readinessHandler(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +29,7 @@ func readinessHandler(w http.ResponseWriter, r *http.Request) {
 
 type apiConfig struct {
 	fileserverHits atomic.Int32
-    dbQueries      database.Queries
+    dbQueries      *database.Queries
 }
 
 type Chirp struct {
