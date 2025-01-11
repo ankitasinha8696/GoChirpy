@@ -1,12 +1,18 @@
 package main
 
 import (
-	"log"
+	"database/sql"
+    "log"
 	"net/http"
     "sync/atomic"
     "fmt"
     "encoding/json"
     "strings"
+    "os"
+    "github.com/joho/godotenv"
+
+    _ "github.com/lib/pq"
+    "github.com/ankitasinha/chirpy/internal/database"
 )
 
 func readinessHandler(w http.ResponseWriter, r *http.Request) {
@@ -23,6 +29,7 @@ func readinessHandler(w http.ResponseWriter, r *http.Request) {
 
 type apiConfig struct {
 	fileserverHits atomic.Int32
+    dbQueries      database.Queries
 }
 
 type Chirp struct {
@@ -108,9 +115,23 @@ func (cfg *apiConfig) validateChirp(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
+    godotenv.Load()
+    dbURL := os.Getenv("DB_URL")
+
+    db, err := sql.Open("postgres", dbURL)
+    if err != nil {
+        log.Fatalf("Failed to connect to the database: %v", err)
+    }
+    defer db.Close()
+
+    // Initialize the SQLC generated database.Queries instance
+    dbQueries := database.New(db)
+
     newMux := http.NewServeMux()
 
-    apiConfig := &apiConfig{}
+    apiConfig := &apiConfig{
+        dbQueries: dbQueries,
+    }
 
     newMux.HandleFunc("GET /api/healthz", readinessHandler)
 
